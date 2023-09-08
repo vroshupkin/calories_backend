@@ -3,7 +3,7 @@ import { AppDataSource } from "../data-source";
 import { TRoles, User } from "./user.entity";
 
 
-export class UserModel
+export class UserModelClass
 {
     dataSource: DataSource
     userRepository: Repository<User>
@@ -14,12 +14,8 @@ export class UserModel
         this.userRepository = dataSource.getRepository(User)
     }
 
-    async addUser(username: string, role: TRoles): Promise<void>
+    async addUser(user: User): Promise<void>
     {
-        const user = new User()
-        user.username = username
-        user.role = role
-
         await this.userRepository.save(user)
     }
 
@@ -30,3 +26,5 @@ export class UserModel
 
     
 }
+
+export const UserModel = new UserModelClass(AppDataSource);

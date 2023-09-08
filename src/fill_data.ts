@@ -2,10 +2,8 @@ import { AppDataSource } from "./data-source"
 import { TRoles, User } from "./user/user.entity"
 
 const new_user = (username: string, role: TRoles = 'user') => {
-    const user = new User()
+    const user = new User(username, role)
     
-    user.username = username
-    user.role = role
     user.created_at = new Date()
 
     return user

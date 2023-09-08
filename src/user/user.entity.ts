@@ -4,6 +4,12 @@ export type TRoles = 'user' | 'admin'
 
 @Entity({name: 'users'})
 export class User {
+    constructor(username: string, role: TRoles = 'user')
+    {
+        this.username = username
+        this.role = role
+    }
+
     @PrimaryGeneratedColumn('increment')
     id: number
 
@@ -13,6 +19,6 @@ export class User {
     @Column()
     role: TRoles
 
-    @Column()
+    @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     created_at: Date
 }
