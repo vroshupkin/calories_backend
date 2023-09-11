@@ -1,50 +1,58 @@
 import { FastifyInstance } from "fastify";
+import { FastifyRequest } from "fastify/types/request";
 import { app } from "../app";
 import { TRoles, User } from "./user.entity";
 import { UserModel, UserModelClass } from "./user.model";
 
+type TUserBody = {
+  username: string;
+  role: TRoles;
+};
 
-type TBodyCreateUser = {
-    username: string,
-    role: TRoles
-}
+export class UserController {
+  constructor(app: FastifyInstance) {
+    UserController.create(app);
+    UserController.find(app);
+    UserController.delete(app);
 
-export class UserController
-{   
-    constructor(app: FastifyInstance)
-    {
-        app.post<{Body:string}>('/user/create', async (req, reply) => {
+    return { message: "User Controller has been initiated" };
+  }
 
-            
-            // const username = req.b`ody.username
-            // const role = req.body.role
+  static find(app: FastifyInstance) {
+    app.get<{ Querystring: { username: string } }>(
+      "/user",
 
-            // console.log(req.body['`'])
-            // console.log(JSON.parse(req.body))
+      async (req, reply) => {
+        return await UserModel.find(req.query.username);
+      },
+    );
+  }
 
-            const {username, role} = JSON.parse(req.body) as {username: string, role: TRoles}
+  static create(app: FastifyInstance) {
+    app.post<{ Body: string }>("/user/create", async (req, reply) => {
+      const { username, role } = JSON.parse(req.body) as TUserBody;
 
-            console.log(username, role)
-            // console.log(Object.assign(req.body))
-            // const a = Object.assign(req.body)
-            // console.log(Object.entries(a))
+      if (username && role) {
+        try {
+          await UserModel.addUser(new User(username, role));
+          // @ts-ignore
+        } catch (err: { code: number }) {
+          return err;
+        }
 
-            // console.log(username, role)
+        reply.statusCode = 200;
+        return { message: "User created!" };
+      }
+    });
+  }
 
-            if(username && role)
-            { 
-                console.log('pass')
-                await UserModel.addUser(new User(username, role));
+  static delete(app: FastifyInstance) {
+    app.delete("/user/delete", async (req, res) => {
+      const body = JSON.parse(req.body as string) as { username: string };
 
-                return {message: 'User created!'}
-            }
-            
-            return {message: 'hey you'}
-        })
-    }
-
-    static create()
-    {
-        
-    }
+      await UserModel.deleteUser(body.username);
+      return "ok";
+    });
+  }
+  //
 }

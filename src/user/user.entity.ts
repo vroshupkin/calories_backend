@@ -1,24 +1,31 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, ManyToOne } from "typeorm"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  ManyToOne,
+} from "typeorm";
 
-export type TRoles = 'user' | 'admin' 
+export type TRoles = "user" | "admin";
 
-@Entity({name: 'users'})
+// TODO Сделать уникальным имя пользователя
+
+@Entity({ name: "users" })
 export class User {
-    constructor(username: string, role: TRoles = 'user')
-    {
-        this.username = username
-        this.role = role
-    }
+  constructor(username: string, role: TRoles = "user") {
+    this.username = username;
+    this.role = role;
+  }
 
-    @PrimaryGeneratedColumn('increment')
-    id: number
+  @PrimaryGeneratedColumn("increment")
+  id: number;
 
-    @Column()
-    username: string
+  @Column({ unique: true })
+  username: string;
 
-    @Column()
-    role: TRoles
+  @Column()
+  role: TRoles;
 
-    @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
-    created_at: Date
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  created_at: Date;
 }
